@@ -16,7 +16,8 @@
     "firebase",
     "gcloud",
     "googlecloud",
-    "functions"
+    "functions",
+    "serverless"
   ],
   "author": "Lowie Huyghe",
   "license": "MIT",
