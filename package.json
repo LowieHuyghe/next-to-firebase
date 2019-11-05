@@ -15,8 +15,7 @@
     "nextjs",
     "firebase",
     "gcloud",
-    "google",
-    "cloud",
+    "googlecloud",
     "functions"
   ],
   "author": "Lowie Huyghe",
