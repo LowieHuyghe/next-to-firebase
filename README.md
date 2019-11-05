@@ -1,5 +1,7 @@
 # Next.js + Firebase
 
+![npm](https://img.shields.io/npm/v/next-to-firebase)
+
 Build an optimized Firebase application from a Next.js serverless-build.
 
 All static pages are hosted. Pages that need server-side-rendering will be added as a Function.
