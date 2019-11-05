@@ -1,0 +1,27 @@
+{
+  "scripts": {
+    "start": "npm run serve:dev",
+    "build:next": "rm -rf src/app/.next && next build src/app",
+    "build:firebase": "next-to-firebase -n src/app -o dist",
+    "build:all": "npm run build:next && npm run build:firebase",
+    "install:functions": "cd dist/src/functions && npm ci --production",
+    "serve:dev": "next dev src/app",
+    "serve:prod": "npm run build:all && npm run install:functions && cd dist && NODE_ENV=production firebase serve",
+    "deploy": "npm run build:all && cd dist && firebase deploy"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "firebase-admin": "^8.6.0",
+    "firebase-functions": "^3.3.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^7.6.2",
+    "next": "9.1.2",
+    "next-to-firebase": "0.1.0",
+    "node": "^8.16.2",
+    "react": "16.11.0",
+    "react-dom": "16.11.0"
+  }
+}

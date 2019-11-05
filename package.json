@@ -1,0 +1,34 @@
+{
+  "name": "next-to-firebase",
+  "version": "0.1.0",
+  "description": "Next.js + Firebase",
+  "main": "src/main.js",
+  "bin": {
+    "next-to-firebase": "./cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LowieHuyghe/next-to-firebase.git"
+  },
+  "keywords": [
+    "next",
+    "nextjs",
+    "firebase",
+    "gcloud",
+    "google",
+    "cloud",
+    "functions"
+  ],
+  "author": "Lowie Huyghe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LowieHuyghe/next-to-firebase/issues"
+  },
+  "homepage": "https://github.com/LowieHuyghe/next-to-firebase#readme",
+  "dependencies": {
+    "cpx": "^1.5.0",
+    "glob": "^7.1.5",
+    "rimraf": "^3.0.0",
+    "yargs": "^14.2.0"
+  }
+}
