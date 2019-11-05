@@ -48,13 +48,17 @@ const run = (rootDir, relativeNextAppDir, relativeDistDir, logger = console) => 
   logger.log('Building functions-dir');
   cpx.copySync(`${nextInfo.serverlessPagesDir}/**/*.js`, distInfo.functionsPagesDistDir);
   cpx.copySync(`${distInfo.functionsSourceDir}/**/*`, distInfo.functionsDistDir);
-  cpx.copySync(distInfo.functionsDistDirCopyGlob, distInfo.functionsDistDir);
+  for (const functionsDistDirCopyGlob of distInfo.functionsDistDirCopyGlobs) {
+    cpx.copySync(functionsDistDirCopyGlob, distInfo.functionsDistDir);
+  }
   const functionsIndex = fs.readFileSync(distInfo.functionsIndexDistPath).toString();
   fs.writeFileSync(distInfo.functionsIndexDistPath, fillTemplate(functionsIndex, '//_exports_', functionExports));
 
   // Build firebase
   logger.log('Building dist-dir and firebase');
-  cpx.copySync(distInfo.distDirCopyGlob, distDir);
+  for (const distDirCopyGlob of distInfo.distDirCopyGlobs) {
+    cpx.copySync(distDirCopyGlob, distDir);
+  }
   const firebaseJson = fs.readFileSync(distInfo.firebaseJsonDistPath).toString();
   fs.writeFileSync(distInfo.firebaseJsonDistPath, fillTemplate(firebaseJson, '"_rewrites_"', firebaseJsonRewrites));
 };

@@ -21,7 +21,10 @@ const getNextInfo = (nextAppDir) => {
 };
 
 const getDistInfo = (rootDir, distDir) => {
-  const distDirCopyGlob = `${rootDir}/*(firebase.json|.firebaserc)`;
+  const distDirCopyGlobs = [
+    `${rootDir}/firebase.json`,
+    `${rootDir}/.firebaserc`,
+  ];
 
   const firebaseJsonSourcePath = path.resolve(rootDir, 'firebase.json');
   const firebaseJsonDistPath = path.resolve(distDir, 'firebase.json');
@@ -37,12 +40,16 @@ const getDistInfo = (rootDir, distDir) => {
   const functionsDistDir = path.resolve(distDir, functionsDirCustom || 'functions');
   const functionsIndexDistPath = path.resolve(functionsDistDir, 'index.js');
   const functionsPagesDistDir = path.join(functionsDistDir, 'pages');
-  const functionsDistDirCopyGlob = `${rootDir}/*(package.json|package-lock.json|yarn.lock)`;
+  const functionsDistDirCopyGlobs = [
+    `${rootDir}/package.json`,
+    `${rootDir}/package-lock.json`,
+    `${rootDir}/yarn.lock`,
+  ];
 
   return {
     firebaseJsonSourcePath,
     firebaseJsonDistPath,
-    distDirCopyGlob,
+    distDirCopyGlobs,
 
     publicSourceDir,
     publicDistDir,
@@ -52,7 +59,7 @@ const getDistInfo = (rootDir, distDir) => {
     functionsDistDir,
     functionsIndexDistPath,
     functionsPagesDistDir,
-    functionsDistDirCopyGlob,
+    functionsDistDirCopyGlobs,
   };
 };
 
