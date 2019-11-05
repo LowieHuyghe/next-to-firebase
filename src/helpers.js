@@ -33,7 +33,7 @@ const getDistInfo = (rootDir, distDir) => {
   const publicDirCustom = firebaseJson.hosting && firebaseJson.hosting.public;
   const publicSourceDir = path.resolve(rootDir, publicDirCustom || 'public');
   const publicDistDir = path.resolve(distDir, publicDirCustom || 'public');
-  const publicNextDistDir = path.resolve(publicDistDir, '_next');
+  const publicNextDistDir = path.resolve(publicDistDir, '_next/static');
 
   const functionsDirCustom = firebaseJson.functions && firebaseJson.functions.source;
   const functionsSourceDir = path.resolve(rootDir, functionsDirCustom || 'functions');
