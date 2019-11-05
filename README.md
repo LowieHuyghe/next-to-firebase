@@ -19,9 +19,9 @@ project/
     functions/
       index.js     < Generic index.js where `//_exports_`-string gets replaced with page-functions
   firebase.json    < Generic firebase.json where `"_rewrites_"`-string gets replaced with the generated routes
-  package.json
+  package.json     < Will get copied to functions-directory in dist so dependencies and engine will be managed here
 ```
-For more info see the example-directory.
+For more info see the [example-directory](https://github.com/LowieHuyghe/next-to-firebase/tree/master/example).
 
 ## Installation
 ```bash
