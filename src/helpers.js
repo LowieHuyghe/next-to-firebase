@@ -17,10 +17,11 @@ const getNextInfo = (nextAppDir) => {
     publicDir,
     serverlessPagesDir,
     staticDir,
+    distDir,
   };
 };
 
-const getDistInfo = (rootDir, distDir) => {
+const getDistInfo = (rootDir, distDir, nextInfo) => {
   const distDirCopyGlobs = [
     `${rootDir}/firebase.json`,
     `${rootDir}/.firebaserc`,
@@ -34,6 +35,9 @@ const getDistInfo = (rootDir, distDir) => {
   const publicSourceDir = path.resolve(rootDir, publicDirCustom || 'public');
   const publicDistDir = path.resolve(distDir, publicDirCustom || 'public');
   const publicNextDistDir = path.resolve(publicDistDir, '_next/static');
+  const publicDistDirCopyGlobs = [
+    `${nextInfo.distDir}/service-worker.js`,
+  ];
 
   const functionsDirCustom = firebaseJson.functions && firebaseJson.functions.source;
   const functionsSourceDir = path.resolve(rootDir, functionsDirCustom || 'functions');
@@ -54,6 +58,7 @@ const getDistInfo = (rootDir, distDir) => {
     publicSourceDir,
     publicDistDir,
     publicNextDistDir,
+    publicDistDirCopyGlobs,
 
     functionsSourceDir,
     functionsDistDir,

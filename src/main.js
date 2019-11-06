@@ -19,7 +19,7 @@ const run = (rootDir, relativeNextAppDir, relativeDistDir, logger = console) => 
   const nextAppDir = path.join(rootDir, relativeNextAppDir);
   const distDir = path.join(rootDir, relativeDistDir);
   const nextInfo = getNextInfo(nextAppDir);
-  const distInfo = getDistInfo(rootDir, distDir);
+  const distInfo = getDistInfo(rootDir, distDir, nextInfo);
 
   // Prepare
   logger.log('Preparing Run');
@@ -43,6 +43,9 @@ const run = (rootDir, relativeNextAppDir, relativeDistDir, logger = console) => 
   cpx.copySync(`${nextInfo.publicDir}/**/*`, distInfo.publicDistDir);
   cpx.copySync(`${nextInfo.staticDir}/**/*`, distInfo.publicNextDistDir);
   cpx.copySync(`${distInfo.publicSourceDir}/**/*`, distInfo.publicDistDir);
+  for (const publicDistDirCopyGlob of distInfo.publicDistDirCopyGlobs) {
+    cpx.copySync(publicDistDirCopyGlob, distInfo.publicDistDir);
+  }
 
   // Build functions
   logger.log('Building functions-dir');
