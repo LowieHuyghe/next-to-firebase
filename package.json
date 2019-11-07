@@ -11,7 +11,7 @@
     "build": "tsc",
     "lint": "tslint 'src/**/*.ts'",
     "prepublish": "npm run build",
-    "pretest": "cd example && npm i",
+    "pretest": "cd example && npm i && npm run build:next",
     "test": "mocha -r ts-node/register 'src/**/*.test.ts'"
   },
   "repository": {
