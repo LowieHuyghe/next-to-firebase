@@ -10,7 +10,8 @@
     "start": "tsc -w",
     "build": "tsc",
     "lint": "tslint 'src/**/*.ts'",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "test": "mocha -r ts-node/register 'src/**/*.test.ts'"
   },
   "repository": {
     "type": "git",
@@ -38,11 +39,16 @@
     "yargs": "^14.2.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.4",
     "@types/cpx": "^1.5.0",
     "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.6",
     "@types/rimraf": "^2.0.3",
     "@types/yargs": "^13.0.3",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "ts-node": "^8.4.1",
     "tslint": "^5.20.1",
     "tslint-config-standard": "^9.0.0",
     "typescript": "^3.7.2"
