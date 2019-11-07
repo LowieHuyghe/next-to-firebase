@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
-      - run: npm build
+      - run: npm run build
 
   lint:
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
-      - run: npm lint
+      - run: npm run lint
 
   publish-npm:
     needs:
