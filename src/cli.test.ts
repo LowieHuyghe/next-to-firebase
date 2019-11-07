@@ -9,6 +9,9 @@ const exampleDir = path.resolve(rootDir, 'example')
 const distDir = path.join(exampleDir, 'dist')
 
 describe('cli', () => {
+  before(() => {
+    execSync('npm run build', { stdio: 'pipe', cwd: rootDir })
+  })
   beforeEach(() => {
     rimraf.sync(distDir)
   })
@@ -17,20 +20,20 @@ describe('cli', () => {
   })
 
   it('fail', () => {
-    expect(() => execSync('./node_modules/.bin/ts-node src/cli.ts -r example', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required arguments: n, o')
+    expect(() => execSync('./cli.js -r example', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required arguments: n, o')
 
-    expect(() => execSync('./node_modules/.bin/ts-node src/cli.ts -r example -n src/app', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
-    expect(() => execSync('./node_modules/.bin/ts-node src/cli.ts -r example --next src/app', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
+    expect(() => execSync('./cli.js -r example -n src/app', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
+    expect(() => execSync('./cli.js -r example --next src/app', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
 
-    expect(() => execSync('./node_modules/.bin/ts-node src/cli.ts -r example -o dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
-    expect(() => execSync('./node_modules/.bin/ts-node src/cli.ts -r example --out dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
-  }).timeout(20000)
+    expect(() => execSync('./cli.js -r example -o dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
+    expect(() => execSync('./cli.js -r example --out dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
+  }).timeout(5000)
 
   it('run', () => {
     // There should be no dist-folder to start with
     expect(glob.sync('**/*', { cwd: distDir })).to.deep.equal([])
 
-    execSync('./node_modules/.bin/ts-node src/cli.ts -r example -n src/app -o dist', { stdio: 'pipe', cwd: rootDir })
+    execSync('./cli.js -r example -n src/app -o dist', { stdio: 'pipe', cwd: rootDir })
 
     // Check the output
     const contents = glob.sync('**/*', { cwd: distDir })
@@ -55,5 +58,5 @@ describe('cli', () => {
       'src/public/product/[pid].html',
       'src/public/robots.txt'
     ])
-  }).timeout(20000)
+  })
 })
