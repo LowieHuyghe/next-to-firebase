@@ -1,4 +1,5 @@
 {
+  "name": "next-to-firebase-example",
   "scripts": {
     "start": "npm run serve:dev",
     "build:next": "rm -rf src/app/.next && next build src/app",
@@ -7,7 +8,7 @@
     "install:functions": "cd dist/src/functions && npm ci --production",
     "serve:dev": "next dev src/app",
     "serve:prod": "npm run build:all && npm run install:functions && cd dist && NODE_ENV=production firebase serve",
-    "deploy": "npm run build:all && cd dist && firebase deploy"
+    "deploy": "[ ! -z \"$MESSAGE\" ] && npm run build:all && cd dist && firebase deploy --message \"$MESSAGE\""
   },
   "engines": {
     "node": "8"
@@ -17,11 +18,14 @@
     "firebase-functions": "^3.3.0"
   },
   "devDependencies": {
+    "@types/react": "^16.9.11",
     "firebase-tools": "^7.6.2",
     "next": "9.1.2",
-    "next-to-firebase": "0.1.0",
-    "node": "^8.16.2",
+    "next-to-firebase": "^0.1.4",
     "react": "16.11.0",
-    "react-dom": "16.11.0"
-  }
+    "react-dom": "16.11.0",
+    "typescript": "^3.6.4"
+  },
+  "author": "Lowie Huyghe",
+  "license": "MIT"
 }
