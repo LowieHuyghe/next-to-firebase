@@ -2,9 +2,15 @@
   "name": "next-to-firebase",
   "version": "0.1.4",
   "description": "Next.js + Firebase",
-  "main": "src/main.js",
+  "main": "./dist/main.js",
   "bin": {
     "next-to-firebase": "./cli.js"
+  },
+  "scripts": {
+    "start": "tsc -w",
+    "build": "tsc",
+    "lint": "tslint 'src/**/*.ts'",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -30,5 +36,15 @@
     "glob": "^7.1.5",
     "rimraf": "^3.0.0",
     "yargs": "^14.2.0"
+  },
+  "devDependencies": {
+    "@types/cpx": "^1.5.0",
+    "@types/glob": "^7.1.1",
+    "@types/node": "^12.12.6",
+    "@types/rimraf": "^2.0.3",
+    "@types/yargs": "^13.0.3",
+    "tslint": "^5.20.1",
+    "tslint-config-standard": "^9.0.0",
+    "typescript": "^3.7.2"
   }
 }
