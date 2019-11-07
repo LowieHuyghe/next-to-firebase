@@ -5,6 +5,7 @@ import * as rimraf from 'rimraf'
 import * as glob from 'glob'
 import { run } from './main'
 import { fillTemplate } from './helpers'
+import { execSync } from 'child_process'
 
 const exampleDir = path.resolve(__dirname, '..', 'example')
 const relativeNextAppDir = 'src/app'
@@ -29,26 +30,31 @@ describe('main', () => {
     // Check the output
     const contents = glob.sync('**/*', { cwd: distDir })
       .filter(item => item.indexOf('src/public/_next/') !== 0)
-    expect(contents).to.deep.equal([
-      // root
-      'firebase.json',
-      'src',
-      // functions
-      'src/functions',
-      'src/functions/index.js',
-      'src/functions/package-lock.json',
-      'src/functions/package.json',
-      'src/functions/pages',
-      'src/functions/pages/_error.js',
-      'src/functions/pages/browser.js',
-      // public
-      'src/public',
-      'src/public/_next',
-      'src/public/index.html',
-      'src/public/product',
-      'src/public/product/[pid].html',
-      'src/public/robots.txt'
-    ])
+    try {
+      expect(contents).to.deep.equal([
+        // root
+        'firebase.json',
+        'src',
+        // functions
+        'src/functions',
+        'src/functions/index.js',
+        'src/functions/package-lock.json',
+        'src/functions/package.json',
+        'src/functions/pages',
+        'src/functions/pages/_error.js',
+        'src/functions/pages/browser.js',
+        // public
+        'src/public',
+        'src/public/_next',
+        'src/public/index.html',
+        'src/public/product',
+        'src/public/product/[pid].html',
+        'src/public/robots.txt'
+      ])
+    } catch (e) {
+      execSync(`find ${distDir}`, { stdio: 'inherit' })
+      throw e
+    }
 
     // Compare some files explicitly
     const shouldBeEqual: { 0: string, 1: string }[] = [
