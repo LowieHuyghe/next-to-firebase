@@ -47,7 +47,7 @@ const pageToSource = (page: Page): string => {
     if (page.key === '/_error') {
       return '**/**'
     }
-    throw new Error(`No way to handle "${page.path}"`)
+    throw new Error(`No way to handle source "${page.path}"`)
   }
 
   return source
@@ -64,7 +64,7 @@ export const pageToDestination = (page: Page): string => {
     return page.path.split('/').slice(1).join('/')
   }
 
-  throw new Error(`No way to handle "${page.path}"`)
+  throw new Error(`No way to handle destination "${page.path}"`)
 }
 
 const pageToFunctionExport = (page: Page): string | undefined => {
@@ -103,7 +103,7 @@ const pageToFirebaseRewrite = (page: Page): string => {
     })
   }
 
-  throw new Error(`No way to handle "${page.path}"`)
+  throw new Error(`No way to handle pathExt "${page.path}"`)
 }
 
 export const pagesToFirebaseRewrites = (pages: Page[]): string => {

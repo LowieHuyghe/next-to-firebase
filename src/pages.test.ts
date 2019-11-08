@@ -17,14 +17,6 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     absPath: path.join(exampleDir, 'pages/_error.js'),
     special: true
   }],
-  [{ '/_document': 'pages/_document.css' }, {
-    key: '/_document',
-    path: 'pages/_document.css',
-    pathExt: '.css',
-    pathNoExt: 'pages/_document',
-    absPath: path.join(exampleDir, 'pages/_document.css'),
-    special: true
-  }],
   [{ '/': 'pages/index.js' }, {
     key: '/',
     path: 'pages/index.js',
@@ -101,7 +93,7 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
   it('pagesToFirebaseRewrites', () => {
     const pages: Page[] = cases
       .map(casee => casee[1])
-      .filter(casee => !!casee && casee.pathExt !== '.css') as Page[]
+      .filter(casee => !!casee && casee.key !== '/_document') as Page[]
 
     const correct = `{"source":"/","function":"pagesIndex"},
 {"source":"/","destination":"index.html"},
@@ -112,5 +104,44 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
 {"source":"**/**","function":"pages_error"}`
 
     expect(pagesToFirebaseRewrites(pages)).to.equal(correct)
+  })
+
+  it('pagesToFirebaseRewrites - No way to handle source', () => {
+    const pages: Page[] = [{
+      key: '/_document',
+      path: 'pages/_document.js',
+      pathExt: '.js',
+      pathNoExt: 'pages/_document',
+      absPath: path.join(exampleDir, 'pages/_document.js'),
+      special: true
+    }]
+
+    expect(() => pagesToFirebaseRewrites(pages)).to.throw('No way to handle source')
+  })
+
+  it('pagesToFirebaseRewrites - No way to handle destination', () => {
+    const pages: Page[] = [{
+      key: '/index',
+      path: 'other/index.html',
+      pathExt: '.html',
+      pathNoExt: 'other/index',
+      absPath: path.join(exampleDir, 'other/index.html'),
+      special: false
+    }]
+
+    expect(() => pagesToFirebaseRewrites(pages)).to.throw('No way to handle destination')
+  })
+
+  it('pagesToFirebaseRewrites - No way to handle pathExt', () => {
+    const pages: Page[] = [{
+      key: '/index',
+      path: 'pages/index.css',
+      pathExt: '.css',
+      pathNoExt: 'pages/index',
+      absPath: path.join(exampleDir, 'pages/index.css'),
+      special: false
+    }]
+
+    expect(() => pagesToFirebaseRewrites(pages)).to.throw('No way to handle pathExt')
   })
 })

@@ -44,4 +44,18 @@ describe('helpers', () => {
   }
 }`)
   })
+
+  it('fillTemplate - No match', () => {
+    const template = `{
+  "hosting": {
+    "rewrites": [
+      { source: "/page", destination: "page.html" }
+    ]
+  }
+}`
+    const data = `{ source: "/", destination: "index.html" },
+{ source: "**/**", function: "_error" }`
+
+    expect(() => fillTemplate(template, '"_rewrites_"', data)).to.throw('Did not match anything')
+  })
 })

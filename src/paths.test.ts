@@ -101,4 +101,17 @@ describe('paths', () => {
     ]
     expect(globsAndFilesToCopy).to.deep.equal(correct)
   })
+
+  it('getGlobsAndFilesToCopy - No way to handle', () => {
+    const paths = getPaths(exampleDir, distDir, nextAppDir)
+    const pages = [{
+      key: '/_document',
+      path: 'pages/_document.css',
+      pathExt: '.css',
+      pathNoExt: 'pages/_document',
+      absPath: path.join(exampleDir, 'pages/_document.css'),
+      special: true
+    }]
+    expect(() => getGlobsAndFilesToCopy(paths, pages)).to.throw('No way to handle')
+  })
 })
