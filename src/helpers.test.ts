@@ -73,22 +73,22 @@ describe('helpers', () => {
 
     const correct: DistInfo = {
       distDirCopyGlobs: [
-        path.join(exampleDir, 'firebase.json'),
-        path.join(exampleDir, '.firebaserc')
+        { cwd: exampleDir, pattern: 'firebase.json' },
+        { cwd: exampleDir, pattern: '.firebaserc' }
       ],
       firebaseJsonDistPath: path.join(distDir, 'firebase.json'),
       firebaseJsonSourcePath: path.join(exampleDir, 'firebase.json'),
       functionsDistDir: path.join(distDir, 'src/functions'),
       functionsDistDirCopyGlobs: [
-        path.join(exampleDir, 'package.json'),
-        path.join(exampleDir, 'package-lock.json'),
-        path.join(exampleDir, 'yarn.lock')
+        { cwd: exampleDir, pattern: 'package.json' },
+        { cwd: exampleDir, pattern: 'package-lock.json' },
+        { cwd: exampleDir, pattern: 'yarn.json' }
       ],
       functionsIndexDistPath: path.join(distDir, 'src/functions/index.js'),
       functionsSourceDir: path.join(exampleDir, 'src/functions'),
       publicDistDir: path.join(distDir, 'src/public'),
       publicDistDirCopyGlobs: [
-        path.join(nextInfo.distDir, 'service-worker.js')
+        { cwd: nextInfo.distDir, pattern: 'service-worker.js' }
       ],
       publicNextDistDir: path.join(distDir, 'src/public/_next/static'),
       publicSourceDir: path.join(exampleDir, 'src/public')
