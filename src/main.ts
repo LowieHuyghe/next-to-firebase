@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as rimraf from 'rimraf'
 import * as cpx from 'cpx'
-import * as glob from 'glob'
+import * as mkdirp from 'mkdirp'
 import {
   filterEmpty,
   getNextInfo,
@@ -46,7 +46,7 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
     .filter(page => page.pathExt === '.html')
     .forEach(page => {
       const target = path.join(distInfo.publicDistDir, pageToDestination(page))
-      fs.mkdirSync(path.dirname(target), { recursive: true })
+      mkdirp.sync(path.dirname(target))
       fs.copyFileSync(page.absPath, target)
     })
   cpx.copySync(`${nextInfo.publicDir}/**/*`, distInfo.publicDistDir)
@@ -62,7 +62,7 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
     .filter(page => page.pathExt === '.js')
     .forEach(page => {
       const target = path.join(distInfo.functionsDistDir, page.path)
-      fs.mkdirSync(path.dirname(target), { recursive: true })
+      mkdirp.sync(path.dirname(target))
       fs.copyFileSync(page.absPath, target)
     })
   cpx.copySync(`${distInfo.functionsSourceDir}/**/*`, distInfo.functionsDistDir)
