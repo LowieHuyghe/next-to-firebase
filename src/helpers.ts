@@ -5,7 +5,8 @@ export const filterEmpty = (item: any): boolean => !!item
 
 export interface NextInfo {
   publicDir: string
-  serverlessPagesDir: string
+  serverlessDir: string
+  serverlessPagesManifestPath: string
   staticDir: string
   distDir: string
 }
@@ -15,12 +16,14 @@ export const getNextInfo = (nextAppDir: string): NextInfo => {
 
   const publicDir = path.resolve(nextAppDir, 'public')
   const distDir = path.resolve(nextAppDir, (config && config.distDir) || '.next')
-  const serverlessPagesDir = path.resolve(distDir, 'serverless/pages')
+  const serverlessDir = path.resolve(distDir, 'serverless')
+  const serverlessPagesManifestPath = path.resolve(distDir, 'serverless/pages-manifest.json')
   const staticDir = path.resolve(distDir, 'static')
 
   return {
     publicDir,
-    serverlessPagesDir,
+    serverlessDir,
+    serverlessPagesManifestPath,
     staticDir,
     distDir
   }
@@ -39,7 +42,6 @@ export interface DistInfo {
   functionsSourceDir: string
   functionsDistDir: string
   functionsIndexDistPath: string
-  functionsPagesDistDir: string
   functionsDistDirCopyGlobs: string[]
 }
 export const getDistInfo = (rootDir: string, distDir: string, nextInfo: NextInfo): DistInfo => {
@@ -64,7 +66,6 @@ export const getDistInfo = (rootDir: string, distDir: string, nextInfo: NextInfo
   const functionsSourceDir = path.resolve(rootDir, functionsDirCustom || 'functions')
   const functionsDistDir = path.resolve(distDir, functionsDirCustom || 'functions')
   const functionsIndexDistPath = path.resolve(functionsDistDir, 'index.js')
-  const functionsPagesDistDir = path.join(functionsDistDir, 'pages')
   const functionsDistDirCopyGlobs = [
     `${rootDir}/package.json`,
     `${rootDir}/package-lock.json`,
@@ -84,7 +85,6 @@ export const getDistInfo = (rootDir: string, distDir: string, nextInfo: NextInfo
     functionsSourceDir,
     functionsDistDir,
     functionsIndexDistPath,
-    functionsPagesDistDir,
     functionsDistDirCopyGlobs
   }
 }

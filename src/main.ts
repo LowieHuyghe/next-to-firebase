@@ -10,10 +10,13 @@ import {
   fillTemplate
 } from './helpers'
 import {
-  pagePathToFunctionExport,
-  pagePathToFirebaseRewrite,
-  sortFirebaseRewrites
-} from './pagepath'
+  pageToFunctionExport,
+  pageToFirebaseRewrite,
+  sortFirebaseRewrites,
+  manifestToPages,
+  pageToDestination
+} from './pages'
+import { execSync } from 'child_process'
 
 export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir: string, logger: Console = console) => {
   const nextAppDir = path.join(rootDir, relativeNextAppDir)
@@ -23,14 +26,15 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
 
   // Prepare
   logger.log('Preparing Run')
-  const pagePaths = glob.sync(`**/*`, { cwd: nextInfo.serverlessPagesDir, nodir: true })
-  const firebaseJsonRewrites = pagePaths
-    .map(pagePathToFirebaseRewrite)
+  const manifest: { [key: string]: string } = require(nextInfo.serverlessPagesManifestPath)
+  const pages = manifestToPages(manifest, nextInfo.serverlessDir)
+  const firebaseJsonRewrites = pages
+    .map(pageToFirebaseRewrite)
     .filter(filterEmpty)
     .sort(sortFirebaseRewrites)
     .join(',\n')
-  const functionExports = pagePaths
-    .map(pagePath => pagePathToFunctionExport(pagePath, distInfo.functionsDistDir, distInfo.functionsPagesDistDir))
+  const functionExports = pages
+    .map(page => pageToFunctionExport(page))
     .filter(filterEmpty)
     .join('\n')
 
@@ -39,7 +43,14 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
 
   // Build public
   logger.log('Building public-dir')
-  cpx.copySync(`${nextInfo.serverlessPagesDir}/**/*.html`, distInfo.publicDistDir)
+  pages
+    .filter(page => page.pathExt === '.html')
+    .forEach(page => {
+      const target = path.join(distInfo.publicDistDir, pageToDestination(page))
+      fs.mkdirSync(path.dirname(target), { recursive: true })
+      fs.copyFileSync(page.absPath, target)
+    })
+  execSync(`find ${distInfo.publicDistDir}`, { stdio: 'inherit' })
   cpx.copySync(`${nextInfo.publicDir}/**/*`, distInfo.publicDistDir)
   cpx.copySync(`${nextInfo.staticDir}/**/*`, distInfo.publicNextDistDir)
   cpx.copySync(`${distInfo.publicSourceDir}/**/*`, distInfo.publicDistDir)
@@ -49,7 +60,13 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
 
   // Build functions
   logger.log('Building functions-dir')
-  cpx.copySync(`${nextInfo.serverlessPagesDir}/**/*.js`, distInfo.functionsPagesDistDir)
+  pages
+    .filter(page => page.pathExt === '.js')
+    .forEach(page => {
+      const target = path.join(distInfo.functionsDistDir, page.path)
+      fs.mkdirSync(path.dirname(target), { recursive: true })
+      fs.copyFileSync(page.absPath, target)
+    })
   cpx.copySync(`${distInfo.functionsSourceDir}/**/*`, distInfo.functionsDistDir)
   for (const functionsDistDirCopyGlob of distInfo.functionsDistDirCopyGlobs) {
     cpx.copySync(functionsDistDirCopyGlob, distInfo.functionsDistDir)

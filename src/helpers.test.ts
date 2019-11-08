@@ -4,7 +4,9 @@ import {
   filterEmpty,
   getNextInfo,
   getDistInfo,
-  fillTemplate
+  fillTemplate,
+  NextInfo,
+  DistInfo
 } from './helpers'
 
 const exampleDir = path.resolve(__dirname, '..', 'example')
@@ -55,19 +57,21 @@ describe('helpers', () => {
   it('getNextInfo', () => {
     const nextInfo = getNextInfo(nextAppDir)
 
-    expect(nextInfo).to.deep.equal({
+    const correct: NextInfo = {
       distDir: path.join(nextAppDir, '.next'),
       publicDir: path.join(nextAppDir, 'public'),
-      serverlessPagesDir: path.join(nextAppDir, '.next/serverless/pages'),
+      serverlessDir: path.join(nextAppDir, '.next/serverless'),
+      serverlessPagesManifestPath: path.join(nextAppDir, '.next/serverless/pages-manifest.json'),
       staticDir: path.join(nextAppDir, '.next/static')
-    })
+    }
+    expect(nextInfo).to.deep.equal(correct)
   })
 
   it('getDistInfo', () => {
     const nextInfo = getNextInfo(nextAppDir)
     const distInfo = getDistInfo(exampleDir, distDir, nextInfo)
 
-    expect(distInfo).to.deep.equal({
+    const correct: DistInfo = {
       distDirCopyGlobs: [
         path.join(exampleDir, 'firebase.json'),
         path.join(exampleDir, '.firebaserc')
@@ -81,7 +85,6 @@ describe('helpers', () => {
         path.join(exampleDir, 'yarn.lock')
       ],
       functionsIndexDistPath: path.join(distDir, 'src/functions/index.js'),
-      functionsPagesDistDir: path.join(distDir, 'src/functions/pages'),
       functionsSourceDir: path.join(exampleDir, 'src/functions'),
       publicDistDir: path.join(distDir, 'src/public'),
       publicDistDirCopyGlobs: [
@@ -89,6 +92,7 @@ describe('helpers', () => {
       ],
       publicNextDistDir: path.join(distDir, 'src/public/_next/static'),
       publicSourceDir: path.join(exampleDir, 'src/public')
-    })
+    }
+    expect(distInfo).to.deep.equal(correct)
   })
 })

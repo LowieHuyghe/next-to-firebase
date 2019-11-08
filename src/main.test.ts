@@ -69,15 +69,15 @@ describe('main', () => {
 
     // Firebase.json is a template
     const firebaseJsonRewrites = `{"source":"/","destination":"index.html"},
-{"source":"/browser","function":"pageBrowser"},
+{"source":"/browser","function":"pagesBrowser"},
 {"source":"/product/*","destination":"product/[pid].html"},
-{"source":"**/**","function":"page_error"}`
+{"source":"**/**","function":"pages_error"}`
     const firebaseJsonContent = fillTemplate(fs.readFileSync(path.join(exampleDir, 'firebase.json')).toString(), '"_rewrites_"', firebaseJsonRewrites)
     expect(fs.readFileSync(path.join(distDir, 'firebase.json')).toString()).to.equal(firebaseJsonContent)
 
     // Functions index.js is a template
-    const functionsIndexExports = `exports.page_error = functions.https.onRequest(require('./pages/_error').render);
-exports.pageBrowser = functions.https.onRequest(require('./pages/browser').render);`
+    const functionsIndexExports = `exports.pages_error = functions.https.onRequest(require('./pages/_error').render);
+exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').render);`
     const functionsIndexContent = fillTemplate(fs.readFileSync(path.join(exampleDir, 'src/functions/index.js')).toString(), '//_exports_', functionsIndexExports)
     expect(fs.readFileSync(path.join(distDir, 'src/functions/index.js')).toString()).to.equal(functionsIndexContent)
   })

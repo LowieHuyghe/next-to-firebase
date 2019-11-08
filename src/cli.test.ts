@@ -27,7 +27,7 @@ describe('cli', () => {
 
     expect(() => execSync('./cli.js -r example -o dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
     expect(() => execSync('./cli.js -r example --out dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
-  }).timeout(5000)
+  }).timeout(10000)
 
   it('run', () => {
     // There should be no dist-folder to start with
@@ -58,5 +58,5 @@ describe('cli', () => {
       'src/public/product/[pid].html',
       'src/public/robots.txt'
     ])
-  })
+  }).timeout(10000)
 })
