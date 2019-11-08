@@ -16,7 +16,6 @@ import {
   manifestToPages,
   pageToDestination
 } from './pages'
-import { execSync } from 'child_process'
 
 export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir: string, logger: Console = console) => {
   const nextAppDir = path.join(rootDir, relativeNextAppDir)
@@ -50,7 +49,6 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
       fs.mkdirSync(path.dirname(target), { recursive: true })
       fs.copyFileSync(page.absPath, target)
     })
-  execSync(`find ${distInfo.publicDistDir}`, { stdio: 'inherit' })
   cpx.copySync(`${nextInfo.publicDir}/**/*`, distInfo.publicDistDir)
   cpx.copySync(`${nextInfo.staticDir}/**/*`, distInfo.publicNextDistDir)
   cpx.copySync(`${distInfo.publicSourceDir}/**/*`, distInfo.publicDistDir)

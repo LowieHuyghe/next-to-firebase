@@ -9,9 +9,6 @@ const exampleDir = path.resolve(rootDir, 'example')
 const distDir = path.join(exampleDir, 'dist')
 
 describe('cli', () => {
-  before(() => {
-    execSync('npm run build', { stdio: 'pipe', cwd: rootDir })
-  })
   beforeEach(() => {
     rimraf.sync(distDir)
   })
