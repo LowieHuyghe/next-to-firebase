@@ -7,21 +7,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 8
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run build
 
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 8
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run lint
 
@@ -30,11 +36,14 @@ jobs:
     - build
     - lint
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 8
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm test
 
@@ -44,11 +53,14 @@ jobs:
     - lint
     - test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 8
+          node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm publish
