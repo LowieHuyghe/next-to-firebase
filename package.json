@@ -12,7 +12,7 @@
     "lint": "tslint 'src/**/*.ts'",
     "prepublish": "npm run build",
     "pretest": "npm run build && cd example && npm i && npm run build:next",
-    "test": "mocha -r ts-node/register 'src/**/*.test.ts'"
+    "test": "nyc mocha --opts mocha.opts"
   },
   "repository": {
     "type": "git",
@@ -49,9 +49,31 @@
     "@types/yargs": "^13.0.3",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.1",
     "tslint-config-standard": "^9.0.0",
     "typescript": "^3.7.2"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "check-coverage": true,
+    "sourceMap": true,
+    "instrument": true
   }
 }

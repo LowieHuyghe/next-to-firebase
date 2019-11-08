@@ -1,3 +1,6 @@
 node_modules/
 dist/
 example/package-lock.json
+.nyc_output/
+coverage/
+.DS_Store
