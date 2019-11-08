@@ -1,17 +1,8 @@
 import { expect } from 'chai'
-import * as path from 'path'
 import {
   filterEmpty,
-  getNextInfo,
-  getDistInfo,
-  fillTemplate,
-  NextInfo,
-  DistInfo
+  fillTemplate
 } from './helpers'
-
-const exampleDir = path.resolve(__dirname, '..', 'example')
-const nextAppDir = path.join(exampleDir, 'src/app')
-const distDir = path.join(exampleDir, 'dist')
 
 describe('helpers', () => {
   it('filterEmpty', () => {
@@ -52,47 +43,5 @@ describe('helpers', () => {
     ]
   }
 }`)
-  })
-
-  it('getNextInfo', () => {
-    const nextInfo = getNextInfo(nextAppDir)
-
-    const correct: NextInfo = {
-      distDir: path.join(nextAppDir, '.next'),
-      publicDir: path.join(nextAppDir, 'public'),
-      serverlessDir: path.join(nextAppDir, '.next/serverless'),
-      serverlessPagesManifestPath: path.join(nextAppDir, '.next/serverless/pages-manifest.json'),
-      staticDir: path.join(nextAppDir, '.next/static')
-    }
-    expect(nextInfo).to.deep.equal(correct)
-  })
-
-  it('getDistInfo', () => {
-    const nextInfo = getNextInfo(nextAppDir)
-    const distInfo = getDistInfo(exampleDir, distDir, nextInfo)
-
-    const correct: DistInfo = {
-      distDirCopyGlobs: [
-        { cwd: exampleDir, pattern: 'firebase.json' },
-        { cwd: exampleDir, pattern: '.firebaserc' }
-      ],
-      firebaseJsonDistPath: path.join(distDir, 'firebase.json'),
-      firebaseJsonSourcePath: path.join(exampleDir, 'firebase.json'),
-      functionsDistDir: path.join(distDir, 'src/functions'),
-      functionsDistDirCopyGlobs: [
-        { cwd: exampleDir, pattern: 'package.json' },
-        { cwd: exampleDir, pattern: 'package-lock.json' },
-        { cwd: exampleDir, pattern: 'yarn.json' }
-      ],
-      functionsIndexDistPath: path.join(distDir, 'src/functions/index.js'),
-      functionsSourceDir: path.join(exampleDir, 'src/functions'),
-      publicDistDir: path.join(distDir, 'src/public'),
-      publicDistDirCopyGlobs: [
-        { cwd: nextInfo.distDir, pattern: 'service-worker.js' }
-      ],
-      publicNextDistDir: path.join(distDir, 'src/public/_next/static'),
-      publicSourceDir: path.join(exampleDir, 'src/public')
-    }
-    expect(distInfo).to.deep.equal(correct)
   })
 })

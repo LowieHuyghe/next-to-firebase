@@ -1,5 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs'
+import { filterEmpty } from './helpers'
 
 export interface Page {
   key: string
@@ -26,7 +27,7 @@ export const manifestToPages = (manifest: { [key: string]: string }, serverlessD
   })
   .filter(page => ignoreFileExists || fs.existsSync(page.absPath))
 
-export const sortFirebaseRewrites = (aStr: string, bStr: string): number => {
+const sortFirebaseRewrites = (aStr: string, bStr: string): number => {
   const a = JSON.parse(aStr)
   const b = JSON.parse(bStr)
 
@@ -66,7 +67,7 @@ export const pageToDestination = (page: Page): string => {
   throw new Error(`No way to handle "${page.path}"`)
 }
 
-export const pageToFunctionExport = (page: Page): string | undefined => {
+const pageToFunctionExport = (page: Page): string | undefined => {
   if (page.pathExt !== '.js') {
     return undefined
   }
@@ -76,7 +77,14 @@ export const pageToFunctionExport = (page: Page): string | undefined => {
   return `exports.${functionName} = functions.https.onRequest(require('./${page.pathNoExt}').render);`
 }
 
-export const pageToFirebaseRewrite = (page: Page): string => {
+export const pagesToFunctionExports = (pages: Page[]): string => {
+  return pages
+    .map(page => pageToFunctionExport(page))
+    .filter(filterEmpty)
+    .join('\n')
+}
+
+const pageToFirebaseRewrite = (page: Page): string => {
   if (page.pathExt === '.js') {
     const source = pageToSource(page)
     const functionName = pageToFunctionName(page)
@@ -96,4 +104,12 @@ export const pageToFirebaseRewrite = (page: Page): string => {
   }
 
   throw new Error(`No way to handle "${page.path}"`)
+}
+
+export const pagesToFirebaseRewrites = (pages: Page[]): string => {
+  return pages
+    .map(pageToFirebaseRewrite)
+    .filter(filterEmpty)
+    .sort(sortFirebaseRewrites)
+    .join(',\n')
 }
