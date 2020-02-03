@@ -1,16 +1,5 @@
 {
   "hosting": [{
-    "target": "development",
-    "public": "src/public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      "_development-rewrites_"
-    ]
-  }, {
     "target": "staging",
     "public": "src/public",
     "ignore": [
