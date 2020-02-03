@@ -8,6 +8,8 @@ interface Arguments {
   out: string,
   r: string,
   root: string,
+  e: string,
+  environments: string,
 }
 const argv = (yargs as yargs.Argv<Arguments>)
   .usage('Usage: $0 [options]')
@@ -29,6 +31,12 @@ const argv = (yargs as yargs.Argv<Arguments>)
   .string('r')
   .describe('r', 'Project root')
   .default('r', 'cwd')
+  // environments
+  .alias('e', 'environments')
+  .nargs('e', 1)
+  .string('e')
+  .describe('e', 'Comma separated environments (ex: development,staging,production)')
+  .default('e', '')
   //
   .demandOption(['n', 'o'])
   .help('h')
@@ -38,5 +46,9 @@ const argv = (yargs as yargs.Argv<Arguments>)
 const rootDir = argv.root === 'cwd' ? process.cwd() : argv.root
 const relativeNextAppDir = argv.next
 const relativeDistDir = argv.out
+const environments: string[] = argv.environments
+  .split(',')
+  .map(environment => environment.trim())
+  .filter(environment => environment)
 
-run(rootDir, relativeNextAppDir, relativeDistDir)
+run(rootDir, relativeNextAppDir, relativeDistDir, environments)

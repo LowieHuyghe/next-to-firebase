@@ -15,7 +15,7 @@ import {
   manifestToPages
 } from './pages'
 
-export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir: string, logger: Console = console) => {
+export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir: string, environments: string[] | undefined, logger: Console = console) => {
   const nextAppDir = path.join(rootDir, relativeNextAppDir)
   const distDir = path.join(rootDir, relativeDistDir)
 
@@ -25,8 +25,8 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
   const manifest: { [key: string]: string } = require(paths.next.source.serverlessPagesManifestPath)
   const pages = manifestToPages(manifest, paths.next.source.serverlessDir)
   const globsAndFilesToCopy = getGlobsAndFilesToCopy(paths, pages)
-  const firebaseJsonRewrites = pagesToFirebaseRewrites(pages)
-  const functionExports = pagesToFunctionExports(pages)
+  const firebaseJsonRewrites = pagesToFirebaseRewrites(pages, environments)
+  const functionExports = pagesToFunctionExports(pages, environments)
 
   // Cleaning up dist-dir
   logger.log('Cleaning up dist-dir')
@@ -43,8 +43,14 @@ export const run = (rootDir: string, relativeNextAppDir: string, relativeDistDir
 
   // Building firebase.json
   logger.log('Building firebase.json')
-  const firebaseJson = fs.readFileSync(paths.firebase.dist.jsonPath).toString()
-  fs.writeFileSync(paths.firebase.dist.jsonPath, fillTemplate(firebaseJson, '"_rewrites_"', firebaseJsonRewrites))
+  let firebaseJson = fs.readFileSync(paths.firebase.dist.jsonPath).toString()
+  for (const firebaseJsonRewrite of firebaseJsonRewrites) {
+    const rewriteReplace = firebaseJsonRewrite.environment
+      ? `"_${firebaseJsonRewrite.environment}-rewrites_"`
+      : '"_rewrites_"'
+    firebaseJson = fillTemplate(firebaseJson, rewriteReplace, firebaseJsonRewrite.firebaseRewrites)
+  }
+  fs.writeFileSync(paths.firebase.dist.jsonPath, firebaseJson)
 
   // Finished
   logger.log('Finished')

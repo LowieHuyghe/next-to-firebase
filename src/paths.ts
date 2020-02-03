@@ -87,7 +87,15 @@ const getFirebasePaths = (rootDir: string, distDir: string): FirebasePaths => {
 
 const getPublicPaths = (rootDir: string, distDir: string, firebasePaths: FirebasePaths): PublicPaths => {
   const firebaseJson = require(firebasePaths.source.jsonPath)
-  const publicDirCustom = firebaseJson.hosting && firebaseJson.hosting.public
+  let publicDirCustom: string | undefined = undefined
+  if (firebaseJson.hosting) {
+    if (Array.isArray(firebaseJson.hosting)) {
+      // TODO: Handle multiple hostings?
+      publicDirCustom = firebaseJson.hosting[0].public
+    } else {
+      publicDirCustom = firebaseJson.hosting.public
+    }
+  }
 
   const publicSourceDir = path.resolve(rootDir, publicDirCustom || 'public')
   const publicDistDir = path.resolve(distDir, publicDirCustom || 'public')

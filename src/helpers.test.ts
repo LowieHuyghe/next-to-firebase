@@ -56,6 +56,6 @@ describe('helpers', () => {
     const data = `{ source: "/", destination: "index.html" },
 { source: "**/**", function: "_error" }`
 
-    expect(() => fillTemplate(template, '"_rewrites_"', data)).to.throw('Did not match anything')
+    expect(() => fillTemplate(template, '"_rewrites_"', data)).to.throw('Could not find')
   })
 })

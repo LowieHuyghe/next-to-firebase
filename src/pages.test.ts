@@ -87,7 +87,33 @@ exports.pagesIndexPage = functions.https.onRequest(require('./pages/index/page')
 exports.pagesSuperSuperDeep = functions.https.onRequest(require('./pages/super/super/deep').render);
 exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[pid]').render);`
 
-    expect(pagesToFunctionExports(pages)).to.equal(correct)
+    expect(pagesToFunctionExports(pages, undefined)).to.equal(correct)
+    expect(pagesToFunctionExports(pages, [])).to.equal(correct)
+  })
+
+  it('pagesToFunctionExportsWithEnvironments', () => {
+    const pages: Page[] = cases.map(casee => casee[1]).filter(i => !!i) as Page[]
+
+    const correct = `exports.development_pages_error = functions.https.onRequest(require('./pages/_error').render);
+exports.staging_pages_error = exports.development_pages_error;
+exports.production_pages_error = exports.development_pages_error;
+exports.development_pagesIndex = functions.https.onRequest(require('./pages/index').render);
+exports.staging_pagesIndex = exports.development_pagesIndex;
+exports.production_pagesIndex = exports.development_pagesIndex;
+exports.development_pagesIndexx = functions.https.onRequest(require('./pages/indexx').render);
+exports.staging_pagesIndexx = exports.development_pagesIndexx;
+exports.production_pagesIndexx = exports.development_pagesIndexx;
+exports.development_pagesIndexPage = functions.https.onRequest(require('./pages/index/page').render);
+exports.staging_pagesIndexPage = exports.development_pagesIndexPage;
+exports.production_pagesIndexPage = exports.development_pagesIndexPage;
+exports.development_pagesSuperSuperDeep = functions.https.onRequest(require('./pages/super/super/deep').render);
+exports.staging_pagesSuperSuperDeep = exports.development_pagesSuperSuperDeep;
+exports.production_pagesSuperSuperDeep = exports.development_pagesSuperSuperDeep;
+exports.development_pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[pid]').render);
+exports.staging_pagesProduct_pid_ = exports.development_pagesProduct_pid_;
+exports.production_pagesProduct_pid_ = exports.development_pagesProduct_pid_;`
+
+    expect(pagesToFunctionExports(pages, ['development', 'staging', 'production'])).to.equal(correct)
   })
 
   it('pagesToFirebaseRewrites', () => {
@@ -95,15 +121,56 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
       .map(casee => casee[1])
       .filter(casee => !!casee && casee.key !== '/_document') as Page[]
 
-    const correct = `{"source":"/","function":"pagesIndex"},
+    const correct = [{
+      environment: undefined,
+      firebaseRewrites: `{"source":"/","function":"pagesIndex"},
 {"source":"/","destination":"index.html"},
 {"source":"/index/page","function":"pagesIndexPage"},
 {"source":"/indexx","function":"pagesIndexx"},
 {"source":"/product/*","function":"pagesProduct_pid_"},
 {"source":"/super/super/deep","function":"pagesSuperSuperDeep"},
 {"source":"**/**","function":"pages_error"}`
+    }]
 
-    expect(pagesToFirebaseRewrites(pages)).to.equal(correct)
+    expect(pagesToFirebaseRewrites(pages, undefined)).to.deep.equal(correct)
+    expect(pagesToFirebaseRewrites(pages, [])).to.deep.equal(correct)
+  })
+
+  it('pagesToFirebaseRewritesWithEnvironments', () => {
+    const pages: Page[] = cases
+      .map(casee => casee[1])
+      .filter(casee => !!casee && casee.key !== '/_document') as Page[]
+
+    const correct = [{
+      environment: 'development',
+      firebaseRewrites: `{"source":"/","function":"development_pagesIndex"},
+{"source":"/","destination":"index.html"},
+{"source":"/index/page","function":"development_pagesIndexPage"},
+{"source":"/indexx","function":"development_pagesIndexx"},
+{"source":"/product/*","function":"development_pagesProduct_pid_"},
+{"source":"/super/super/deep","function":"development_pagesSuperSuperDeep"},
+{"source":"**/**","function":"development_pages_error"}`
+    }, {
+      environment: 'staging',
+      firebaseRewrites: `{"source":"/","function":"staging_pagesIndex"},
+{"source":"/","destination":"index.html"},
+{"source":"/index/page","function":"staging_pagesIndexPage"},
+{"source":"/indexx","function":"staging_pagesIndexx"},
+{"source":"/product/*","function":"staging_pagesProduct_pid_"},
+{"source":"/super/super/deep","function":"staging_pagesSuperSuperDeep"},
+{"source":"**/**","function":"staging_pages_error"}`
+    }, {
+      environment: 'production',
+      firebaseRewrites: `{"source":"/","function":"production_pagesIndex"},
+{"source":"/","destination":"index.html"},
+{"source":"/index/page","function":"production_pagesIndexPage"},
+{"source":"/indexx","function":"production_pagesIndexx"},
+{"source":"/product/*","function":"production_pagesProduct_pid_"},
+{"source":"/super/super/deep","function":"production_pagesSuperSuperDeep"},
+{"source":"**/**","function":"production_pages_error"}`
+    }]
+
+    expect(pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.deep.equal(correct)
   })
 
   it('pagesToFirebaseRewrites - No way to handle source', () => {
@@ -116,7 +183,9 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
       special: true
     }]
 
-    expect(() => pagesToFirebaseRewrites(pages)).to.throw('No way to handle source')
+    expect(() => pagesToFirebaseRewrites(pages, undefined)).to.throw('No way to handle source')
+    expect(() => pagesToFirebaseRewrites(pages, [])).to.throw('No way to handle source')
+    expect(() => pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.throw('No way to handle source')
   })
 
   it('pagesToFirebaseRewrites - No way to handle destination', () => {
@@ -129,7 +198,9 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
       special: false
     }]
 
-    expect(() => pagesToFirebaseRewrites(pages)).to.throw('No way to handle destination')
+    expect(() => pagesToFirebaseRewrites(pages, undefined)).to.throw('No way to handle destination')
+    expect(() => pagesToFirebaseRewrites(pages, [])).to.throw('No way to handle destination')
+    expect(() => pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.throw('No way to handle destination')
   })
 
   it('pagesToFirebaseRewrites - No way to handle pathExt', () => {
@@ -142,6 +213,8 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
       special: false
     }]
 
-    expect(() => pagesToFirebaseRewrites(pages)).to.throw('No way to handle pathExt')
+    expect(() => pagesToFirebaseRewrites(pages, undefined)).to.throw('No way to handle pathExt')
+    expect(() => pagesToFirebaseRewrites(pages, [])).to.throw('No way to handle pathExt')
+    expect(() => pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.throw('No way to handle pathExt')
   })
 })

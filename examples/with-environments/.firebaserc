@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "development": "my-development-project-name",
+    "staging": "my-staging-project-name",
+    "production": "my-production-project-name"
+  }
+}

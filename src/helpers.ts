@@ -9,7 +9,7 @@ export const fillTemplate = (template: string, replace: string, data: string): s
   const regex = new RegExp(`([ \\t]*)${replace}`, 'g')
   const match = regex.exec(template)
   if (!match) {
-    throw new Error('Did not match anything')
+    throw new Error(`Could not find ${replace}`)
   }
   const spacing = match[1]
   const dataWithSpacing = spacing + data.split('\n').join('\n' + spacing)

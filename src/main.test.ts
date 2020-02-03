@@ -7,28 +7,28 @@ import { run } from './main'
 import { fillTemplate } from './helpers'
 import { execSync } from 'child_process'
 
-const exampleDir = path.resolve(__dirname, '..', 'example')
 const relativeNextAppDir = 'src/app'
 const relativeDistDir = 'dist'
-const distDir = path.join(exampleDir, 'dist')
+const simpleExampleDir = path.resolve(__dirname, '..', 'examples', 'simple')
+const simpleDistDir = path.join(simpleExampleDir, relativeDistDir)
+const withEnvironmentsExampleDir = path.resolve(__dirname, '..', 'examples', 'with-environments')
+const withEnvironmentsDistDir = path.join(withEnvironmentsExampleDir, relativeDistDir)
 
 describe('main', () => {
   beforeEach(() => {
-    rimraf.sync(distDir)
-  })
-  after(() => {
-    rimraf.sync(distDir)
+    rimraf.sync(simpleDistDir)
+    rimraf.sync(withEnvironmentsDistDir)
   })
 
   it('run', () => {
     // There should be no dist-folder to start with
-    expect(glob.sync('**/*', { cwd: distDir })).to.deep.equal([])
+    expect(glob.sync('**/*', { cwd: simpleDistDir })).to.deep.equal([])
 
     // Run
-    run(exampleDir, relativeNextAppDir, relativeDistDir)
+    run(simpleExampleDir, relativeNextAppDir, relativeDistDir, undefined)
 
     // Check the output
-    const contents = glob.sync('**/*', { cwd: distDir })
+    const contents = glob.sync('**/*', { cwd: simpleDistDir })
       .filter(item => item.indexOf('src/public/_next/') !== 0)
     try {
       expect(contents).to.deep.equal([
@@ -52,16 +52,16 @@ describe('main', () => {
         'src/public/robots.txt'
       ])
     } catch (e) {
-      execSync(`find ${distDir}`, { stdio: 'inherit' })
+      execSync(`find ${simpleDistDir}`, { stdio: 'inherit' })
       throw e
     }
 
     // Compare some files explicitly
     const shouldBeEqual: { 0: string, 1: string }[] = [
-      [path.join(exampleDir, '.firebaserc'), path.join(distDir, '.firebaserc')],
-      [path.join(exampleDir, 'package.json'), path.join(distDir, 'src/functions/package.json')],
-      [path.join(exampleDir, 'package-lock.json'), path.join(distDir, 'src/functions/package-lock.json')],
-      [path.join(exampleDir, 'src/app/public/robots.txt'), path.join(distDir, 'src/public/robots.txt')]
+      [path.join(simpleExampleDir, '.firebaserc'), path.join(simpleDistDir, '.firebaserc')],
+      [path.join(simpleExampleDir, 'package.json'), path.join(simpleDistDir, 'src/functions/package.json')],
+      [path.join(simpleExampleDir, 'package-lock.json'), path.join(simpleDistDir, 'src/functions/package-lock.json')],
+      [path.join(simpleExampleDir, 'src/app/public/robots.txt'), path.join(simpleDistDir, 'src/public/robots.txt')]
     ]
     for (const row of shouldBeEqual) {
       expect(fs.readFileSync(row[0]).toString()).to.equal(fs.readFileSync(row[1]).toString())
@@ -72,13 +72,97 @@ describe('main', () => {
 {"source":"/browser","function":"pagesBrowser"},
 {"source":"/product/*","destination":"product/[pid].html"},
 {"source":"**/**","function":"pages_error"}`
-    const firebaseJsonContent = fillTemplate(fs.readFileSync(path.join(exampleDir, 'firebase.json')).toString(), '"_rewrites_"', firebaseJsonRewrites)
-    expect(fs.readFileSync(path.join(distDir, 'firebase.json')).toString()).to.equal(firebaseJsonContent)
+    const firebaseJsonContent = fillTemplate(fs.readFileSync(path.join(simpleExampleDir, 'firebase.json')).toString(), '"_rewrites_"', firebaseJsonRewrites)
+    expect(fs.readFileSync(path.join(simpleDistDir, 'firebase.json')).toString()).to.equal(firebaseJsonContent)
 
     // Functions index.js is a template
     const functionsIndexExports = `exports.pages_error = functions.https.onRequest(require('./pages/_error').render);
 exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').render);`
-    const functionsIndexContent = fillTemplate(fs.readFileSync(path.join(exampleDir, 'src/functions/index.js')).toString(), '//_exports_', functionsIndexExports)
-    expect(fs.readFileSync(path.join(distDir, 'src/functions/index.js')).toString()).to.equal(functionsIndexContent)
+    const functionsIndexContent = fillTemplate(fs.readFileSync(path.join(simpleExampleDir, 'src/functions/index.js')).toString(), '//_exports_', functionsIndexExports)
+    expect(fs.readFileSync(path.join(simpleDistDir, 'src/functions/index.js')).toString()).to.equal(functionsIndexContent)
+  })
+
+  it('runWithEnvironments', () => {
+    // There should be no dist-folder to start with
+    expect(glob.sync('**/*', { cwd: withEnvironmentsDistDir })).to.deep.equal([])
+
+    // Run
+    run(withEnvironmentsExampleDir, relativeNextAppDir, relativeDistDir, ['development', 'staging', 'production'])
+
+    // Check the output
+    const contents = glob.sync('**/*', { cwd: withEnvironmentsDistDir })
+      .filter(item => item.indexOf('src/public/_next/') !== 0)
+    try {
+      expect(contents).to.deep.equal([
+        // root
+        'firebase.json',
+        'src',
+        // functions
+        'src/functions',
+        'src/functions/index.js',
+        'src/functions/package-lock.json',
+        'src/functions/package.json',
+        'src/functions/pages',
+        'src/functions/pages/_error.js',
+        'src/functions/pages/browser.js',
+        // public
+        'src/public',
+        'src/public/_next',
+        'src/public/index.html',
+        'src/public/product',
+        'src/public/product/[pid].html',
+        'src/public/robots.txt'
+      ])
+    } catch (e) {
+      execSync(`find ${withEnvironmentsDistDir}`, { stdio: 'inherit' })
+      throw e
+    }
+
+    // Compare some files explicitly
+    const shouldBeEqual: { 0: string, 1: string }[] = [
+      [path.join(withEnvironmentsExampleDir, '.firebaserc'), path.join(withEnvironmentsDistDir, '.firebaserc')],
+      [path.join(withEnvironmentsExampleDir, 'package.json'), path.join(withEnvironmentsDistDir, 'src/functions/package.json')],
+      [path.join(withEnvironmentsExampleDir, 'package-lock.json'), path.join(withEnvironmentsDistDir, 'src/functions/package-lock.json')],
+      [path.join(withEnvironmentsExampleDir, 'src/app/public/robots.txt'), path.join(withEnvironmentsDistDir, 'src/public/robots.txt')]
+    ]
+    for (const row of shouldBeEqual) {
+      expect(fs.readFileSync(row[0]).toString()).to.equal(fs.readFileSync(row[1]).toString())
+    }
+
+    // Firebase.json is a template
+    const firebaseJsonRewrites = [{
+      environment: 'development',
+      firebaseRewrites: `{"source":"/","destination":"index.html"},
+{"source":"/browser","function":"development_pagesBrowser"},
+{"source":"/product/*","destination":"product/[pid].html"},
+{"source":"**/**","function":"development_pages_error"}`
+    }, {
+      environment: 'staging',
+      firebaseRewrites: `{"source":"/","destination":"index.html"},
+{"source":"/browser","function":"staging_pagesBrowser"},
+{"source":"/product/*","destination":"product/[pid].html"},
+{"source":"**/**","function":"staging_pages_error"}`
+    }, {
+      environment: 'production',
+      firebaseRewrites: `{"source":"/","destination":"index.html"},
+{"source":"/browser","function":"production_pagesBrowser"},
+{"source":"/product/*","destination":"product/[pid].html"},
+{"source":"**/**","function":"production_pages_error"}`
+    }]
+    let firebaseJsonContent = fs.readFileSync(path.join(withEnvironmentsExampleDir, 'firebase.json')).toString()
+    for (const firebaseJsonRewrite of firebaseJsonRewrites) {
+      firebaseJsonContent = fillTemplate(firebaseJsonContent, `"_${firebaseJsonRewrite.environment}-rewrites_"`, firebaseJsonRewrite.firebaseRewrites)
+    }
+    expect(fs.readFileSync(path.join(withEnvironmentsDistDir, 'firebase.json')).toString()).to.equal(firebaseJsonContent)
+
+    // Functions index.js is a template
+    const functionsIndexExports = `exports.development_pages_error = functions.https.onRequest(require('./pages/_error').render);
+exports.staging_pages_error = exports.development_pages_error;
+exports.production_pages_error = exports.development_pages_error;
+exports.development_pagesBrowser = functions.https.onRequest(require('./pages/browser').render);
+exports.staging_pagesBrowser = exports.development_pagesBrowser;
+exports.production_pagesBrowser = exports.development_pagesBrowser;`
+    const functionsIndexContent = fillTemplate(fs.readFileSync(path.join(withEnvironmentsExampleDir, 'src/functions/index.js')).toString(), '//_exports_', functionsIndexExports)
+    expect(fs.readFileSync(path.join(withEnvironmentsDistDir, 'src/functions/index.js')).toString()).to.equal(functionsIndexContent)
   })
 })

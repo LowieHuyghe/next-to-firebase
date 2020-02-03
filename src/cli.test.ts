@@ -5,35 +5,36 @@ import * as glob from 'glob'
 import { execSync } from 'child_process'
 
 const rootDir = path.resolve(__dirname, '..')
-const exampleDir = path.resolve(rootDir, 'example')
-const distDir = path.join(exampleDir, 'dist')
+const simpleExampleRelativeDir = path.join('examples', 'simple')
+const simpleExampleDir = path.resolve(rootDir, simpleExampleRelativeDir)
+const simpleDistDir = path.join(simpleExampleDir, 'dist')
 
 describe('cli', () => {
   beforeEach(() => {
-    rimraf.sync(distDir)
+    rimraf.sync(simpleDistDir)
   })
   after(() => {
-    rimraf.sync(distDir)
+    rimraf.sync(simpleDistDir)
   })
 
   it('fail', () => {
-    expect(() => execSync('./cli.js -r example', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required arguments: n, o')
+    expect(() => execSync(`./cli.js -r ${simpleExampleRelativeDir}`, { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required arguments: n, o')
 
-    expect(() => execSync('./cli.js -r example -n src/app', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
-    expect(() => execSync('./cli.js -r example --next src/app', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
+    expect(() => execSync(`./cli.js -r ${simpleExampleRelativeDir} -n src/app`, { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
+    expect(() => execSync(`./cli.js -r ${simpleExampleRelativeDir} --next src/app`, { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: o')
 
-    expect(() => execSync('./cli.js -r example -o dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
-    expect(() => execSync('./cli.js -r example --out dist', { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
+    expect(() => execSync(`./cli.js -r ${simpleExampleRelativeDir} -o dist`, { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
+    expect(() => execSync(`./cli.js -r ${simpleExampleRelativeDir} --out dist`, { stdio: 'pipe', cwd: rootDir })).to.throw('Missing required argument: n')
   }).timeout(10000)
 
   it('run', () => {
     // There should be no dist-folder to start with
-    expect(glob.sync('**/*', { cwd: distDir })).to.deep.equal([])
+    expect(glob.sync('**/*', { cwd: simpleDistDir })).to.deep.equal([])
 
-    execSync('./cli.js -r example -n src/app -o dist', { stdio: 'pipe', cwd: rootDir })
+    execSync(`./cli.js -r ${simpleExampleRelativeDir} -n src/app -o dist`, { stdio: 'pipe', cwd: rootDir })
 
     // Check the output
-    const contents = glob.sync('**/*', { cwd: distDir })
+    const contents = glob.sync('**/*', { cwd: simpleDistDir })
       .filter(item => item.indexOf('src/public/_next/') !== 0)
     expect(contents).to.deep.equal([
       // root

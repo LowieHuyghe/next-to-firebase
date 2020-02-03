@@ -1,5 +1,5 @@
 .github/
-example/
+examples/
 src/
 dist/*.test.js
 dist/*.test.d.ts
