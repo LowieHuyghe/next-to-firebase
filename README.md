@@ -1,6 +1,7 @@
 # Next.js + Firebase
 
 ![npm](https://img.shields.io/npm/v/next-to-firebase)
+![ci](https://github.com/LowieHuyghe/next-to-firebase/workflows/On%20Push/badge.svg)
 
 Build an optimized Firebase application from a Next.js serverless-build.
 
