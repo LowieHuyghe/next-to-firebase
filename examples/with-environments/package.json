@@ -3,7 +3,7 @@
   "scripts": {
     "start": "npm run serve:dev",
     "build:next": "rm -rf src/app/.next && next build src/app",
-    "build:firebase": "next-to-firebase -n src/app -o dist",
+    "build:firebase": "next-to-firebase -n src/app -o dist -e development,staging,production",
     "build:all": "npm run build:next && npm run build:firebase",
     "install:functions": "cd dist/src/functions && npm ci --production",
     "serve:dev": "next dev src/app",
