@@ -7,14 +7,14 @@ import {
   Page
 } from './pages'
 
-const exampleDir = path.resolve(__dirname, '..', 'example')
+const simpleExampleDir = path.resolve(__dirname, '..', 'examples', 'simple')
 const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
   [{ '/_error': 'pages/_error.js' }, {
     key: '/_error',
     path: 'pages/_error.js',
     pathExt: '.js',
     pathNoExt: 'pages/_error',
-    absPath: path.join(exampleDir, 'pages/_error.js'),
+    absPath: path.join(simpleExampleDir, 'pages/_error.js'),
     special: true
   }],
   [{ '/': 'pages/index.js' }, {
@@ -22,7 +22,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     path: 'pages/index.js',
     pathExt: '.js',
     pathNoExt: 'pages/index',
-    absPath: path.join(exampleDir, 'pages/index.js'),
+    absPath: path.join(simpleExampleDir, 'pages/index.js'),
     special: false
   }],
   [{ '/': 'pages/index.html' }, {
@@ -30,7 +30,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     path: 'pages/index.html',
     pathExt: '.html',
     pathNoExt: 'pages/index',
-    absPath: path.join(exampleDir, 'pages/index.html'),
+    absPath: path.join(simpleExampleDir, 'pages/index.html'),
     special: false
   }],
   [{ '/index': 'pages/index.js' }, undefined],
@@ -39,7 +39,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     path: 'pages/indexx.js',
     pathExt: '.js',
     pathNoExt: 'pages/indexx',
-    absPath: path.join(exampleDir, 'pages/indexx.js'),
+    absPath: path.join(simpleExampleDir, 'pages/indexx.js'),
     special: false
   }],
   [{ '/index/page': 'pages/index/page.js' }, {
@@ -47,7 +47,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     path: 'pages/index/page.js',
     pathExt: '.js',
     pathNoExt: 'pages/index/page',
-    absPath: path.join(exampleDir, 'pages/index/page.js'),
+    absPath: path.join(simpleExampleDir, 'pages/index/page.js'),
     special: false
   }],
   [{ '/super/super/deep': 'pages/super/super/deep.js' }, {
@@ -55,7 +55,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     path: 'pages/super/super/deep.js',
     pathExt: '.js',
     pathNoExt: 'pages/super/super/deep',
-    absPath: path.join(exampleDir, 'pages/super/super/deep.js'),
+    absPath: path.join(simpleExampleDir, 'pages/super/super/deep.js'),
     special: false
   }],
   [{ '/product/[pid]': 'pages/product/[pid].js' }, {
@@ -63,7 +63,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
     path: 'pages/product/[pid].js',
     pathExt: '.js',
     pathNoExt: 'pages/product/[pid]',
-    absPath: path.join(exampleDir, 'pages/product/[pid].js'),
+    absPath: path.join(simpleExampleDir, 'pages/product/[pid].js'),
     special: false
   }]
 ]
@@ -71,7 +71,7 @@ const cases: { 0: { [key: string]: string }, 1: Page | undefined }[] = [
 describe('pages', () => {
   it('manifestToPages', () => {
     for (const casee of cases) {
-      const caseePage = manifestToPages(casee[0], exampleDir, true)[0]
+      const caseePage = manifestToPages(casee[0], simpleExampleDir, true)[0]
 
       expect(caseePage).to.deep.equal(casee[1])
     }
@@ -94,24 +94,30 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
   it('pagesToFunctionExportsWithEnvironments', () => {
     const pages: Page[] = cases.map(casee => casee[1]).filter(i => !!i) as Page[]
 
-    const correct = `exports.development_pages_error = functions.https.onRequest(require('./pages/_error').render);
-exports.staging_pages_error = exports.development_pages_error;
-exports.production_pages_error = exports.development_pages_error;
-exports.development_pagesIndex = functions.https.onRequest(require('./pages/index').render);
-exports.staging_pagesIndex = exports.development_pagesIndex;
-exports.production_pagesIndex = exports.development_pagesIndex;
-exports.development_pagesIndexx = functions.https.onRequest(require('./pages/indexx').render);
-exports.staging_pagesIndexx = exports.development_pagesIndexx;
-exports.production_pagesIndexx = exports.development_pagesIndexx;
-exports.development_pagesIndexPage = functions.https.onRequest(require('./pages/index/page').render);
-exports.staging_pagesIndexPage = exports.development_pagesIndexPage;
-exports.production_pagesIndexPage = exports.development_pagesIndexPage;
-exports.development_pagesSuperSuperDeep = functions.https.onRequest(require('./pages/super/super/deep').render);
-exports.staging_pagesSuperSuperDeep = exports.development_pagesSuperSuperDeep;
-exports.production_pagesSuperSuperDeep = exports.development_pagesSuperSuperDeep;
-exports.development_pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[pid]').render);
-exports.staging_pagesProduct_pid_ = exports.development_pagesProduct_pid_;
-exports.production_pagesProduct_pid_ = exports.development_pagesProduct_pid_;`
+    const correct = `exports.development = {
+  development_pages_error: functions.https.onRequest(require('./pages/_error').render),
+  development_pagesIndex: functions.https.onRequest(require('./pages/index').render),
+  development_pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
+  development_pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
+  development_pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
+  development_pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
+};
+exports.staging = {
+  staging_pages_error: functions.https.onRequest(require('./pages/_error').render),
+  staging_pagesIndex: functions.https.onRequest(require('./pages/index').render),
+  staging_pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
+  staging_pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
+  staging_pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
+  staging_pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
+};
+exports.production = {
+  production_pages_error: functions.https.onRequest(require('./pages/_error').render),
+  production_pagesIndex: functions.https.onRequest(require('./pages/index').render),
+  production_pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
+  production_pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
+  production_pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
+  production_pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
+};`
 
     expect(pagesToFunctionExports(pages, ['development', 'staging', 'production'])).to.equal(correct)
   })
@@ -179,7 +185,7 @@ exports.production_pagesProduct_pid_ = exports.development_pagesProduct_pid_;`
       path: 'pages/_document.js',
       pathExt: '.js',
       pathNoExt: 'pages/_document',
-      absPath: path.join(exampleDir, 'pages/_document.js'),
+      absPath: path.join(simpleExampleDir, 'pages/_document.js'),
       special: true
     }]
 
@@ -194,7 +200,7 @@ exports.production_pagesProduct_pid_ = exports.development_pagesProduct_pid_;`
       path: 'other/index.html',
       pathExt: '.html',
       pathNoExt: 'other/index',
-      absPath: path.join(exampleDir, 'other/index.html'),
+      absPath: path.join(simpleExampleDir, 'other/index.html'),
       special: false
     }]
 
@@ -209,7 +215,7 @@ exports.production_pagesProduct_pid_ = exports.development_pagesProduct_pid_;`
       path: 'pages/index.css',
       pathExt: '.css',
       pathNoExt: 'pages/index',
-      absPath: path.join(exampleDir, 'pages/index.css'),
+      absPath: path.join(simpleExampleDir, 'pages/index.css'),
       special: false
     }]
 

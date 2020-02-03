@@ -3,12 +3,14 @@
   "scripts": {
     "start": "npm run serve:dev",
     "build:next": "rm -rf src/app/.next && next build src/app",
-    "build:firebase": "next-to-firebase -n src/app -o dist -e development,staging,production",
+    "build:firebase": "next-to-firebase -n src/app -o dist -e staging,production",
     "build:all": "npm run build:next && npm run build:firebase",
     "install:functions": "cd dist/src/functions && npm ci --production",
     "serve:dev": "next dev src/app",
-    "serve:prod": "npm run build:all && npm run install:functions && cd dist && NODE_ENV=production firebase serve",
-    "deploy": "[ ! -z \"$MESSAGE\" ] && npm run build:all && cd dist && firebase deploy --message \"$MESSAGE\""
+    "serve:stag": "npm run build:all && npm run install:functions && cd dist && NODE_ENV=staging firebase serve --only hosting:staging,functions:staging",
+    "serve:prod": "npm run build:all && npm run install:functions && cd dist && NODE_ENV=production firebase serve --only hosting:production,functions:production",
+    "deploy:stag": "[ ! -z \"$MESSAGE\" ] && npm run build:all && cd dist && firebase deploy --message \"$MESSAGE\" --only hosting:staging,functions:staging",
+    "deploy:prod": "[ ! -z \"$MESSAGE\" ] && npm run build:all && cd dist && firebase deploy --message \"$MESSAGE\" --only hosting:production,functions:production"
   },
   "engines": {
     "node": "8"

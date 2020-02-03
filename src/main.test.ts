@@ -156,12 +156,18 @@ exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').rend
     expect(fs.readFileSync(path.join(withEnvironmentsDistDir, 'firebase.json')).toString()).to.equal(firebaseJsonContent)
 
     // Functions index.js is a template
-    const functionsIndexExports = `exports.development_pages_error = functions.https.onRequest(require('./pages/_error').render);
-exports.staging_pages_error = exports.development_pages_error;
-exports.production_pages_error = exports.development_pages_error;
-exports.development_pagesBrowser = functions.https.onRequest(require('./pages/browser').render);
-exports.staging_pagesBrowser = exports.development_pagesBrowser;
-exports.production_pagesBrowser = exports.development_pagesBrowser;`
+    const functionsIndexExports = `exports.development = {
+  development_pages_error: functions.https.onRequest(require('./pages/_error').render),
+  development_pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
+};
+exports.staging = {
+  staging_pages_error: functions.https.onRequest(require('./pages/_error').render),
+  staging_pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
+};
+exports.production = {
+  production_pages_error: functions.https.onRequest(require('./pages/_error').render),
+  production_pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
+};`
     const functionsIndexContent = fillTemplate(fs.readFileSync(path.join(withEnvironmentsExampleDir, 'src/functions/index.js')).toString(), '//_exports_', functionsIndexExports)
     expect(fs.readFileSync(path.join(withEnvironmentsDistDir, 'src/functions/index.js')).toString()).to.equal(functionsIndexContent)
   })

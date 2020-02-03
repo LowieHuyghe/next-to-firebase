@@ -75,30 +75,48 @@ export const pageToDestination = (page: Page): string => {
   throw new Error(`No way to handle destination "${page.path}"`)
 }
 
-const pageToFunctionExport = (page: Page, environment: string | undefined, sameAsEnvironment: string | undefined): string | undefined => {
+const pageToFunctionExport = (page: Page, environment: string | undefined): string | undefined => {
   if (page.pathExt !== '.js') {
     return undefined
   }
 
   const functionName = pageToFunctionName(page, environment)
 
-  if (sameAsEnvironment && sameAsEnvironment !== environment) {
-    const previousFunctionName = pageToFunctionName(page, sameAsEnvironment)
-    return `exports.${functionName} = exports.${previousFunctionName};`
+  if (!environment) {
+    return `exports.${functionName} = functions.https.onRequest(require('./${page.pathNoExt}').render);`
   }
-  return `exports.${functionName} = functions.https.onRequest(require('./${page.pathNoExt}').render);`
+  return `${functionName}: functions.https.onRequest(require('./${page.pathNoExt}').render)`
+}
+
+const pagesToFunctionExport = (pages: Page[], environment: string | undefined): string | undefined => {
+  const functionExports: string[] = []
+
+  for (const page of pages) {
+    const functionExport = pageToFunctionExport(page, environment)
+    if (functionExport) {
+      functionExports.push(functionExport)
+    }
+  }
+
+  if (!functionExports.length) {
+    return undefined
+  }
+  if (!environment) {
+    return functionExports.join('\n')
+  }
+  return `exports.${environment} = {
+  ${functionExports.join(',\n  ')}
+};`
 }
 
 export const pagesToFunctionExports = (pages: Page[], environments: string[] | undefined): string => {
   const environmentsToUse = (environments && environments.length) ? environments : [undefined]
   const functionExports: string[] = []
 
-  for (const page of pages) {
-    for (const environment of environmentsToUse) {
-      const functionExport = pageToFunctionExport(page, environment, environmentsToUse[0])
-      if (functionExport) {
-        functionExports.push(functionExport)
-      }
+  for (const environment of environmentsToUse) {
+    const functionExport = pagesToFunctionExport(pages, environment)
+    if (functionExport) {
+      functionExports.push(functionExport)
     }
   }
 
