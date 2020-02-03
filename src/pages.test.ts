@@ -95,28 +95,28 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
     const pages: Page[] = cases.map(casee => casee[1]).filter(i => !!i) as Page[]
 
     const correct = `exports.development = {
-  development_pages_error: functions.https.onRequest(require('./pages/_error').render),
-  development_pagesIndex: functions.https.onRequest(require('./pages/index').render),
-  development_pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
-  development_pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
-  development_pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
-  development_pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
+  pages_error: functions.https.onRequest(require('./pages/_error').render),
+  pagesIndex: functions.https.onRequest(require('./pages/index').render),
+  pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
+  pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
+  pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
+  pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
 };
 exports.staging = {
-  staging_pages_error: functions.https.onRequest(require('./pages/_error').render),
-  staging_pagesIndex: functions.https.onRequest(require('./pages/index').render),
-  staging_pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
-  staging_pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
-  staging_pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
-  staging_pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
+  pages_error: functions.https.onRequest(require('./pages/_error').render),
+  pagesIndex: functions.https.onRequest(require('./pages/index').render),
+  pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
+  pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
+  pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
+  pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
 };
 exports.production = {
-  production_pages_error: functions.https.onRequest(require('./pages/_error').render),
-  production_pagesIndex: functions.https.onRequest(require('./pages/index').render),
-  production_pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
-  production_pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
-  production_pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
-  production_pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
+  pages_error: functions.https.onRequest(require('./pages/_error').render),
+  pagesIndex: functions.https.onRequest(require('./pages/index').render),
+  pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
+  pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
+  pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
+  pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
 };`
 
     expect(pagesToFunctionExports(pages, ['development', 'staging', 'production'])).to.equal(correct)
@@ -149,31 +149,31 @@ exports.production = {
 
     const correct = [{
       environment: 'development',
-      firebaseRewrites: `{"source":"/","function":"development_pagesIndex"},
+      firebaseRewrites: `{"source":"/","function":"development-pagesIndex"},
 {"source":"/","destination":"index.html"},
-{"source":"/index/page","function":"development_pagesIndexPage"},
-{"source":"/indexx","function":"development_pagesIndexx"},
-{"source":"/product/*","function":"development_pagesProduct_pid_"},
-{"source":"/super/super/deep","function":"development_pagesSuperSuperDeep"},
-{"source":"**/**","function":"development_pages_error"}`
+{"source":"/index/page","function":"development-pagesIndexPage"},
+{"source":"/indexx","function":"development-pagesIndexx"},
+{"source":"/product/*","function":"development-pagesProduct_pid_"},
+{"source":"/super/super/deep","function":"development-pagesSuperSuperDeep"},
+{"source":"**/**","function":"development-pages_error"}`
     }, {
       environment: 'staging',
-      firebaseRewrites: `{"source":"/","function":"staging_pagesIndex"},
+      firebaseRewrites: `{"source":"/","function":"staging-pagesIndex"},
 {"source":"/","destination":"index.html"},
-{"source":"/index/page","function":"staging_pagesIndexPage"},
-{"source":"/indexx","function":"staging_pagesIndexx"},
-{"source":"/product/*","function":"staging_pagesProduct_pid_"},
-{"source":"/super/super/deep","function":"staging_pagesSuperSuperDeep"},
-{"source":"**/**","function":"staging_pages_error"}`
+{"source":"/index/page","function":"staging-pagesIndexPage"},
+{"source":"/indexx","function":"staging-pagesIndexx"},
+{"source":"/product/*","function":"staging-pagesProduct_pid_"},
+{"source":"/super/super/deep","function":"staging-pagesSuperSuperDeep"},
+{"source":"**/**","function":"staging-pages_error"}`
     }, {
       environment: 'production',
-      firebaseRewrites: `{"source":"/","function":"production_pagesIndex"},
+      firebaseRewrites: `{"source":"/","function":"production-pagesIndex"},
 {"source":"/","destination":"index.html"},
-{"source":"/index/page","function":"production_pagesIndexPage"},
-{"source":"/indexx","function":"production_pagesIndexx"},
-{"source":"/product/*","function":"production_pagesProduct_pid_"},
-{"source":"/super/super/deep","function":"production_pagesSuperSuperDeep"},
-{"source":"**/**","function":"production_pages_error"}`
+{"source":"/index/page","function":"production-pagesIndexPage"},
+{"source":"/indexx","function":"production-pagesIndexx"},
+{"source":"/product/*","function":"production-pagesProduct_pid_"},
+{"source":"/super/super/deep","function":"production-pagesSuperSuperDeep"},
+{"source":"**/**","function":"production-pages_error"}`
     }]
 
     expect(pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.deep.equal(correct)

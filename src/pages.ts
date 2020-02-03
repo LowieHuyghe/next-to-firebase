@@ -53,18 +53,12 @@ const pageToSource = (page: Page): string => {
   return source
 }
 
-const pageToFunctionName = (page: Page, environment: string | undefined): string => {
-  let functionName = page.pathNoExt
+const pageToFunctionName = (page: Page): string => {
+  return page.pathNoExt
     .split('/')
     .map((part, i) => i === 0 ? part : (part[0].toUpperCase() + part.substr(1)))
     .join('')
     .replace(/[^A-Za-z]/g, '_')
-
-  if (environment) {
-    functionName = `${environment}_${functionName}`
-  }
-
-  return functionName
 }
 
 export const pageToDestination = (page: Page): string => {
@@ -80,7 +74,7 @@ const pageToFunctionExport = (page: Page, environment: string | undefined): stri
     return undefined
   }
 
-  const functionName = pageToFunctionName(page, environment)
+  const functionName = pageToFunctionName(page)
 
   if (!environment) {
     return `exports.${functionName} = functions.https.onRequest(require('./${page.pathNoExt}').render);`
@@ -126,7 +120,10 @@ export const pagesToFunctionExports = (pages: Page[], environments: string[] | u
 const pageToFirebaseRewrite = (page: Page, environment: string | undefined): string => {
   if (page.pathExt === '.js') {
     const source = pageToSource(page)
-    const functionName = pageToFunctionName(page, environment)
+    let functionName = pageToFunctionName(page)
+    if (environment) {
+      functionName = `${environment}-${functionName}`
+    }
     return JSON.stringify({
       source,
       function: functionName

@@ -133,21 +133,21 @@ exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').rend
     const firebaseJsonRewrites = [{
       environment: 'development',
       firebaseRewrites: `{"source":"/","destination":"index.html"},
-{"source":"/browser","function":"development_pagesBrowser"},
+{"source":"/browser","function":"development-pagesBrowser"},
 {"source":"/product/*","destination":"product/[pid].html"},
-{"source":"**/**","function":"development_pages_error"}`
+{"source":"**/**","function":"development-pages_error"}`
     }, {
       environment: 'staging',
       firebaseRewrites: `{"source":"/","destination":"index.html"},
-{"source":"/browser","function":"staging_pagesBrowser"},
+{"source":"/browser","function":"staging-pagesBrowser"},
 {"source":"/product/*","destination":"product/[pid].html"},
-{"source":"**/**","function":"staging_pages_error"}`
+{"source":"**/**","function":"staging-pages_error"}`
     }, {
       environment: 'production',
       firebaseRewrites: `{"source":"/","destination":"index.html"},
-{"source":"/browser","function":"production_pagesBrowser"},
+{"source":"/browser","function":"production-pagesBrowser"},
 {"source":"/product/*","destination":"product/[pid].html"},
-{"source":"**/**","function":"production_pages_error"}`
+{"source":"**/**","function":"production-pages_error"}`
     }]
     let firebaseJsonContent = fs.readFileSync(path.join(withEnvironmentsExampleDir, 'firebase.json')).toString()
     for (const firebaseJsonRewrite of firebaseJsonRewrites) {
@@ -157,16 +157,16 @@ exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').rend
 
     // Functions index.js is a template
     const functionsIndexExports = `exports.development = {
-  development_pages_error: functions.https.onRequest(require('./pages/_error').render),
-  development_pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
+  pages_error: functions.https.onRequest(require('./pages/_error').render),
+  pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
 };
 exports.staging = {
-  staging_pages_error: functions.https.onRequest(require('./pages/_error').render),
-  staging_pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
+  pages_error: functions.https.onRequest(require('./pages/_error').render),
+  pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
 };
 exports.production = {
-  production_pages_error: functions.https.onRequest(require('./pages/_error').render),
-  production_pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
+  pages_error: functions.https.onRequest(require('./pages/_error').render),
+  pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
 };`
     const functionsIndexContent = fillTemplate(fs.readFileSync(path.join(withEnvironmentsExampleDir, 'src/functions/index.js')).toString(), '//_exports_', functionsIndexExports)
     expect(fs.readFileSync(path.join(withEnvironmentsDistDir, 'src/functions/index.js')).toString()).to.equal(functionsIndexContent)
