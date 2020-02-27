@@ -35,7 +35,7 @@ const argv = (yargs as yargs.Argv<Arguments>)
   .alias('e', 'environments')
   .nargs('e', 1)
   .string('e')
-  .describe('e', 'Comma separated environments (ex: development,staging,production)')
+  .describe('e', 'Comma separated environments (ex: staging,production)')
   .default('e', '')
   //
   .demandOption(['n', 'o'])

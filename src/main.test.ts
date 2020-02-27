@@ -87,7 +87,7 @@ exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').rend
     expect(glob.sync('**/*', { cwd: withEnvironmentsDistDir })).to.deep.equal([])
 
     // Run
-    run(withEnvironmentsExampleDir, relativeNextAppDir, relativeDistDir, ['development', 'staging', 'production'])
+    run(withEnvironmentsExampleDir, relativeNextAppDir, relativeDistDir, ['staging', 'production'])
 
     // Check the output
     const contents = glob.sync('**/*', { cwd: withEnvironmentsDistDir })
@@ -131,12 +131,6 @@ exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').rend
 
     // Firebase.json is a template
     const firebaseJsonRewrites = [{
-      environment: 'development',
-      firebaseRewrites: `{"source":"/","destination":"index.html"},
-{"source":"/browser","function":"development-pagesBrowser"},
-{"source":"/product/*","destination":"product/[pid].html"},
-{"source":"**/**","function":"development-pages_error"}`
-    }, {
       environment: 'staging',
       firebaseRewrites: `{"source":"/","destination":"index.html"},
 {"source":"/browser","function":"staging-pagesBrowser"},
@@ -156,11 +150,7 @@ exports.pagesBrowser = functions.https.onRequest(require('./pages/browser').rend
     expect(fs.readFileSync(path.join(withEnvironmentsDistDir, 'firebase.json')).toString()).to.equal(firebaseJsonContent)
 
     // Functions index.js is a template
-    const functionsIndexExports = `exports.development = {
-  pages_error: functions.https.onRequest(require('./pages/_error').render),
-  pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
-};
-exports.staging = {
+    const functionsIndexExports = `exports.staging = {
   pages_error: functions.https.onRequest(require('./pages/_error').render),
   pagesBrowser: functions.https.onRequest(require('./pages/browser').render)
 };

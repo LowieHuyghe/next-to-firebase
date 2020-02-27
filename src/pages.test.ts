@@ -94,15 +94,7 @@ exports.pagesProduct_pid_ = functions.https.onRequest(require('./pages/product/[
   it('pagesToFunctionExportsWithEnvironments', () => {
     const pages: Page[] = cases.map(casee => casee[1]).filter(i => !!i) as Page[]
 
-    const correct = `exports.development = {
-  pages_error: functions.https.onRequest(require('./pages/_error').render),
-  pagesIndex: functions.https.onRequest(require('./pages/index').render),
-  pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
-  pagesIndexPage: functions.https.onRequest(require('./pages/index/page').render),
-  pagesSuperSuperDeep: functions.https.onRequest(require('./pages/super/super/deep').render),
-  pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
-};
-exports.staging = {
+    const correct = `exports.staging = {
   pages_error: functions.https.onRequest(require('./pages/_error').render),
   pagesIndex: functions.https.onRequest(require('./pages/index').render),
   pagesIndexx: functions.https.onRequest(require('./pages/indexx').render),
@@ -119,7 +111,7 @@ exports.production = {
   pagesProduct_pid_: functions.https.onRequest(require('./pages/product/[pid]').render)
 };`
 
-    expect(pagesToFunctionExports(pages, ['development', 'staging', 'production'])).to.equal(correct)
+    expect(pagesToFunctionExports(pages, ['staging', 'production'])).to.equal(correct)
   })
 
   it('pagesToFirebaseRewrites', () => {
@@ -148,15 +140,6 @@ exports.production = {
       .filter(casee => !!casee && casee.key !== '/_document') as Page[]
 
     const correct = [{
-      environment: 'development',
-      firebaseRewrites: `{"source":"/","function":"development-pagesIndex"},
-{"source":"/","destination":"index.html"},
-{"source":"/index/page","function":"development-pagesIndexPage"},
-{"source":"/indexx","function":"development-pagesIndexx"},
-{"source":"/product/*","function":"development-pagesProduct_pid_"},
-{"source":"/super/super/deep","function":"development-pagesSuperSuperDeep"},
-{"source":"**/**","function":"development-pages_error"}`
-    }, {
       environment: 'staging',
       firebaseRewrites: `{"source":"/","function":"staging-pagesIndex"},
 {"source":"/","destination":"index.html"},
@@ -176,7 +159,7 @@ exports.production = {
 {"source":"**/**","function":"production-pages_error"}`
     }]
 
-    expect(pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.deep.equal(correct)
+    expect(pagesToFirebaseRewrites(pages, ['staging', 'production'])).to.deep.equal(correct)
   })
 
   it('pagesToFirebaseRewrites - No way to handle source', () => {
@@ -191,7 +174,7 @@ exports.production = {
 
     expect(() => pagesToFirebaseRewrites(pages, undefined)).to.throw('No way to handle source')
     expect(() => pagesToFirebaseRewrites(pages, [])).to.throw('No way to handle source')
-    expect(() => pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.throw('No way to handle source')
+    expect(() => pagesToFirebaseRewrites(pages, ['staging', 'production'])).to.throw('No way to handle source')
   })
 
   it('pagesToFirebaseRewrites - No way to handle destination', () => {
@@ -206,7 +189,7 @@ exports.production = {
 
     expect(() => pagesToFirebaseRewrites(pages, undefined)).to.throw('No way to handle destination')
     expect(() => pagesToFirebaseRewrites(pages, [])).to.throw('No way to handle destination')
-    expect(() => pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.throw('No way to handle destination')
+    expect(() => pagesToFirebaseRewrites(pages, ['staging', 'production'])).to.throw('No way to handle destination')
   })
 
   it('pagesToFirebaseRewrites - No way to handle pathExt', () => {
@@ -221,6 +204,6 @@ exports.production = {
 
     expect(() => pagesToFirebaseRewrites(pages, undefined)).to.throw('No way to handle pathExt')
     expect(() => pagesToFirebaseRewrites(pages, [])).to.throw('No way to handle pathExt')
-    expect(() => pagesToFirebaseRewrites(pages, ['development', 'staging', 'production'])).to.throw('No way to handle pathExt')
+    expect(() => pagesToFirebaseRewrites(pages, ['staging', 'production'])).to.throw('No way to handle pathExt')
   })
 })

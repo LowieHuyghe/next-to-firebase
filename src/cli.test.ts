@@ -63,7 +63,7 @@ describe('cli', () => {
     // There should be no dist-folder to start with
     expect(glob.sync('**/*', { cwd: withEnvironmentsDistDir })).to.deep.equal([])
 
-    execSync(`./cli.js -r ${withEnvironmentsExampleRelativeDir} -n src/app -o dist -e development,staging,production`, { stdio: 'pipe', cwd: rootDir })
+    execSync(`./cli.js -r ${withEnvironmentsExampleRelativeDir} -n src/app -o dist -e staging,production`, { stdio: 'pipe', cwd: rootDir })
 
     // Check the output
     const contents = glob.sync('**/*', { cwd: withEnvironmentsDistDir })
